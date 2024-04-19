@@ -180,16 +180,16 @@ function displayQuestions(questions){
     let questionsContainer = document.querySelector('#questionCards');
     //clear the questions container
     ////Step 3C : Uncomment to clear the questions container
-    // clearContainer(questionsContainer);
+    clearContainer(questionsContainer);
 
     //create a card for a single question for testing
-    let question = questions[0];
-    let questionCard = createQuestionCard(question);
-    //append the question card to the questionsContainer
-    questionsContainer.appendChild(questionCard);
 
     //Step 3C 
     //loop through the questions and create a question card for each
+    for(question of questions){
+        questionCard = createQuestionCard(question);
+        questionsContainer.appendChild(questionCard);
+    }
     //append each card to the questionsContainer
     
 }
@@ -247,18 +247,28 @@ function createQuestionCard(question){
     //Step 3A: Create the header of the card
     console.log(question);
     //create a header (div element) with class card-header
-
+    let questionHeader = document.createElement('div')
+    questionHeader.classList.add('card-header');
     //create an title (h5 element) with the class card-title
     //the title should say the question
+    let questionTitle = document.createElement('h5');
+    questionTitle.classList.add('card-title');
+    questionTitle.textContent = `${question.question}`;
 
 
     //create a subtitle (p element) with the class card-subtitle
     //the subtitle should say the category of the question
+    let categorySubtitle = document.createElement('p');
+    categorySubtitle.classList.add('card-subtitle');
+    categorySubtitle.textContent = `Category: ${question.category}`;
 
 
     //append the cardTitle and subtitle to the cardHeader
+    questionHeader.appendChild(questionTitle);
+    questionHeader.appendChild(categorySubtitle);
 
     //append the cardHeader to the questionCard
+    questionCard.appendChild(questionHeader);
 
     /*********** HEADER END ************* */
 
@@ -279,7 +289,11 @@ function createQuestionCard(question){
 
     //Part 3B: 
     //for each incorrect answer, make an input with type radio and class form-check input, call the function createFormCheckInput
-    
+
+    for(let incorrectAnswer of question.incorrect_answers){
+        let incorrectAnswerFormCheck = createFormCheckInput(question, false, incorrectAnswer);
+        cardBody.appendChild(incorrectAnswerFormCheck);
+    }
 
     //append the cardBody to the form
     form.appendChild(cardBody);
@@ -327,18 +341,24 @@ function createQuestionCard(question){
  */
 async function getQuestions(){
     console.log("Fetching questions from the API");
-    const baseURL = 'https://opentdb.com/api.php?amount=1';
+    const baseURL = 'https://opentdb.com/api.php?';
     
     //Step 1: get the user input (number of questions to get)
     //get the number of questions to fetch from the user input
+    let userInput = document.querySelector('#numberOfQuestions');
+    let users = userInput.value;
+    let numQuestionsString = `amount=${users}`;
 
     //update the totalQuestions variable
-
+    totalQuestions = Number(users)
     //Step 2: get the user input (category)
+    const categorySelect = document.querySelector('#categorySelect');
+    let chosenOption = categorySelect.value;
+    let categoryString = `&category=${chosenOption}`;
 
 
     //build the full URL
-    const fullURL = `${baseURL}`;
+    const fullURL = `${baseURL}${numQuestionsString}${categoryString}`;
     console.log("Full URL: ", fullURL);
     //make the fetch request
     const response = await fetch(fullURL);
